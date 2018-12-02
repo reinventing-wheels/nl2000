@@ -1,6 +1,6 @@
 {
   "name": "nl2000",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,7 +18,7 @@
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-preset": "reinventing-wheels/tslint-preset#v0.1.0",
-    "typescript": "^3.1.1"
+    "typescript": "^3.3.0-dev.20181201"
   },
   "jest": {
     "preset": "ts-jest",

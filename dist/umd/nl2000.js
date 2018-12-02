@@ -4,23 +4,34 @@
   (factory((global.nl2000 = {})));
 }(this, (function (exports) { 'use strict';
 
-  const scheme = (range) => String.fromCharCode(...Array(range).keys())
-      .replace(/[^\p{Nd}\p{LC}]|[\u0530-\u1d6a\u1fbe]/ug, '');
-  const convert = (radix, toRadix, input) => {
-      const remainders = [];
-      while (input.some(n => n > 0))
-          remainders.push(divide(radix, toRadix, input));
+  const fast = (fromRadix, toRadix, input) => {
+      const remainders = [], r = BigInt(fromRadix), R = BigInt(toRadix);
+      let z = BigInt(0);
+      for (const n of input)
+          z = r * z + BigInt(n);
+      for (; z; z /= R)
+          remainders.push(Number(z % R));
       return remainders.reverse();
   };
-  const divide = (radix, divisor, input) => {
-      let remainder = 0;
-      for (let i = 0; i < input.length; i++) {
-          const n = radix * remainder + input[i];
-          input[i] = n / divisor >>> 0; // integer division
-          remainder = n % divisor;
+  const slow = (fromRadix, toRadix, input) => {
+      const remainders = [];
+      while (input.some(n => n > 0)) {
+          let remainder = 0;
+          for (let i = 0; i < input.length; i++) {
+              const n = fromRadix * remainder + input[i];
+              input[i] = n / toRadix >>> 0; // integer division
+              remainder = n % toRadix;
+          }
+          remainders.push(remainder);
       }
-      return remainder;
+      return remainders.reverse();
   };
+  const convert = typeof BigInt === 'function'
+      ? fast
+      : slow;
+
+  const scheme = (range) => String.fromCharCode(...Array(range).keys())
+      .replace(/[^\p{Nd}\p{LC}]|[\u0530-\u1d6a\u1fbe]/ug, '');
 
   const NL2000 = scheme(0x2000);
   const NL100 = scheme(0x100);
