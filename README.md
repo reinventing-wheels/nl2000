@@ -40,23 +40,27 @@ yarn add reinventing-wheels/nl2000
 Using predefined schemes:
 
 ```ts
-import { NL2000, encode, decode } from 'nl2000'
+import { NL2000, encoder, decoder, encode, decode } from 'nl2000'
 
 const bytes = Buffer.from('foobar') // [102, 111, 111, …]
-const encoded = encode(NL2000, bytes) // "Mӭƍȷὧ"
-const decoded = decode(NL2000, encoded) // [102, 111, 111, …]
+const encoded = encode(bytes) // "Mӭƍȷὧ"
+const decoded = decode(encoded) // [102, 111, 111, …]
+
+// or
+const encoded = encoder(NL2000)(bytes)
+const decoded = decoder(NL2000)(encoded)
 ```
 
 Making and using your own own scheme made of anything you want:
 
 ```ts
-import { encode, decode } from 'nl2000'
+import { encoder, decoder } from 'nl2000'
 
 const scheme = [...'👐🤲🙌👏🙏🤝👍👎👊✊🤛🤜🤞✌🤘🤟👌👈👉👆👇☝✋🤚🖐🖖👋🤙💪🖕']
 
 const bytes = Buffer.from('send nudes') // [115, 101, 110, …]
-const encoded = encode(scheme, bytes) // "🤲👎🖕🤛👍🖐🤛🙏👋☝👍🤛🤛🤞👊💪🤜"
-const decoded = decode(scheme, encoded) // [115, 101, 110, …]
+const encoded = encoder(scheme)(bytes) // "🤲👎🖕🤛👍🖐🤛🙏👋☝👍🤛🤛🤞👊💪🤜"
+const decoded = decoder(scheme)(encoded) // [115, 101, 110, …]
 ```
 
 **Note:** Although it looks like base64 on steroids and produces similar results, it has complexity of **O(n²)** rather than **O(n)**. So don't expect it to be as fast as any other base2ⁿ encoding when you process more than a few kilobytes of data at once.
