@@ -43,13 +43,7 @@ const min = merge(umd, {
     file: pkg.browser.replace(/\w+$/, 'min.$&')
   },
   plugins: [
-    terser({
-      ecma: 8,
-      compress: {
-        unsafe: true,
-        pure_getters: true
-      }
-    })
+    terser({ ecma: 8 })
   ]
 })
 
