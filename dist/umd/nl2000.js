@@ -1,20 +1,22 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.nl2000 = {})));
-}(this, (function (exports) { 'use strict';
+  (global = global || self, factory(global.nl2000 = {}));
+}(this, function (exports) { 'use strict';
 
   const fast = (fromRadix, toRadix, input) => {
-      const remainders = [], r = BigInt(fromRadix), R = BigInt(toRadix);
-      let z = BigInt(0);
-      for (const n of input)
-          z = r * z + BigInt(n);
-      for (; z; z /= R)
-          remainders.push(Number(z % R));
-      return remainders.reverse();
+      const fromRadixʹ = BigInt(fromRadix);
+      const toRadixʹ = BigInt(toRadix);
+      const output = [];
+      let n = BigInt(0);
+      for (let i = 0; i < input.length; i++)
+          n = fromRadixʹ * n + BigInt(input[i]);
+      for (; n; n /= toRadixʹ)
+          output.push(Number(n % toRadixʹ));
+      return output.reverse();
   };
   const slow = (fromRadix, toRadix, input) => {
-      const remainders = [];
+      const output = [];
       while (input.some(n => n > 0)) {
           let remainder = 0;
           for (let i = 0; i < input.length; i++) {
@@ -22,9 +24,9 @@
               input[i] = n / toRadix >>> 0; // integer division
               remainder = n % toRadix;
           }
-          remainders.push(remainder);
+          output.push(remainder);
       }
-      return remainders.reverse();
+      return output.reverse();
   };
   const convert = typeof BigInt === 'function'
       ? fast
@@ -34,20 +36,26 @@
       .replace(/[^\p{Nd}\p{LC}]|[\u0530-\u1d6a\u1fbe]/ug, '');
 
   const NL2000 = scheme(0x2000);
+  const NL180 = scheme(0x180);
   const NL100 = scheme(0x100);
   const NL80 = scheme(0x80);
   const NL60 = scheme(0x60);
-  const encode = (scheme$$1, input) => convert(0x100, scheme$$1.length, [...input]).map(i => scheme$$1[i]).join('');
-  const decode = (scheme$$1, input) => convert(scheme$$1.length, 0x100, [...input].map(c => scheme$$1.indexOf(c)));
+  const encoder = (scheme = NL2000) => input => convert(0x100, scheme.length, [...input]).map(i => scheme[i]).join('');
+  const decoder = (scheme = NL2000) => input => convert(scheme.length, 0x100, [...input].map(c => scheme.indexOf(c)));
+  const encode = encoder();
+  const decode = decoder();
 
-  exports.NL2000 = NL2000;
   exports.NL100 = NL100;
-  exports.NL80 = NL80;
+  exports.NL180 = NL180;
+  exports.NL2000 = NL2000;
   exports.NL60 = NL60;
-  exports.encode = encode;
+  exports.NL80 = NL80;
   exports.decode = decode;
+  exports.decoder = decoder;
+  exports.encode = encode;
+  exports.encoder = encoder;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
 //# sourceMappingURL=nl2000.js.map

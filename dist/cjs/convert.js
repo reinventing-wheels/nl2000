@@ -1,16 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fast = (fromRadix, toRadix, input) => {
-    const remainders = [], r = BigInt(fromRadix), R = BigInt(toRadix);
-    let z = BigInt(0);
-    for (const n of input)
-        z = r * z + BigInt(n);
-    for (; z; z /= R)
-        remainders.push(Number(z % R));
-    return remainders.reverse();
+    const fromRadixʹ = BigInt(fromRadix);
+    const toRadixʹ = BigInt(toRadix);
+    const output = [];
+    let n = BigInt(0);
+    for (let i = 0; i < input.length; i++)
+        n = fromRadixʹ * n + BigInt(input[i]);
+    for (; n; n /= toRadixʹ)
+        output.push(Number(n % toRadixʹ));
+    return output.reverse();
 };
 exports.slow = (fromRadix, toRadix, input) => {
-    const remainders = [];
+    const output = [];
     while (input.some(n => n > 0)) {
         let remainder = 0;
         for (let i = 0; i < input.length; i++) {
@@ -18,9 +20,9 @@ exports.slow = (fromRadix, toRadix, input) => {
             input[i] = n / toRadix >>> 0; // integer division
             remainder = n % toRadix;
         }
-        remainders.push(remainder);
+        output.push(remainder);
     }
-    return remainders.reverse();
+    return output.reverse();
 };
 exports.convert = typeof BigInt === 'function'
     ? exports.fast
